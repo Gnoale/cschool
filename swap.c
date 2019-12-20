@@ -15,8 +15,8 @@ void main()
     memcpy(vp2, buffer, size);
   }
 
-  int g1 = 8;
-  int g2 = 4;
+  int g1 = 20900988;
+  int g2 = 1;
 
   printf("g1 before swap = %i\n", g1);
   printf("g2 before swap = %i\n", g2);
