@@ -19,7 +19,7 @@ def bubble(a):
 ```
 import time, random, copy
 
-a = [random.randint(0,1000) for a in range(10000)]
+a = [random.randint(0,1000) for a in range(1000)]
 b = copy.copy(a)
 c = copy.copy(a)
 d = copy.copy(a)
@@ -35,11 +35,33 @@ bubble(c)
 
 ```
 
-# Selection 
+# Insertion
 Faster than mergesort on little set, article about [timesort algorithm](https://hackernoon.com/timsort-the-fastest-sorting-algorithm-youve-never-heard-of-36b28417f399)
+Shift every element to the right while element j-1 > tmp.
+Fill the hole with tmp then.
 
 ```
 def insertion(a):
+    begin = time.time()
+    N = len(a)
+    i = 1
+    while i < N:
+      j = i
+      tmp = a[i]
+      while j > 0 and a[j-1] > tmp:
+        a[j] = a[j-1]
+        j -= 1
+      a[j] = tmp
+    i += 1
+    end = time.time()
+    print(end-begin)
+```
+
+
+# Selection
+
+```
+def selection(a):
     begin = time.time()
     N = len(a)
     i = j = 0
@@ -56,13 +78,6 @@ def insertion(a):
     print(end-begin)
 ```
 
-```
-insertion(b)
-4.12656998634
-
-insertion(d)
-3.8756980896
-```
 
 # Snippet to find a numeric palindrom
 
