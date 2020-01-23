@@ -35,7 +35,7 @@ bubble(c)
 
 ```
 
-# Insertion
+# Insertion 
 Faster than mergesort on little set, article about [timesort algorithm](https://hackernoon.com/timsort-the-fastest-sorting-algorithm-youve-never-heard-of-36b28417f399)
 Shift every element to the right while element j-1 > tmp.
 Fill the hole with tmp then.
@@ -78,10 +78,50 @@ def selection(a):
     print(end-begin)
 ```
 
+# Merge sort
+
+```
+def merge_sort(A):
+    """
+    Sort list A into order, and return result.
+    """
+    n = len(A)
+    if n==1: 
+        return A
+    mid = n//2     # floor division
+    L = merge_sort(A[:mid])
+    R = merge_sort(A[mid:])
+    return merge(L,R)
+
+def merge(L,R):
+    """
+    Given two sorted sequences L and R, return their merge.
+    """
+    i = 0
+    j = 0
+    answer = []
+    while i<len(L) and j<len(R):
+        if L[i]<R[j]:
+            answer.append(L[i])
+            i += 1
+        else:
+            answer.append(R[j])
+            j += 1
+    if i<len(L):
+        answer.extend(L[i:])
+    if j<len(R):
+        answer.extend(R[j:])
+    return answer
+```
+
+
+
+
+
 
 # Snippet to find a numeric palindrom
 
-``̀`
+```
 def is_numeric_palindrome(n):
   arr = []
   while(n > 0):
