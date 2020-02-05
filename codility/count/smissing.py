@@ -7,19 +7,23 @@ def solution(A):
     for i in range(len(A)): 
         if A[i] < 1:
             missing = 1
-            break
-        try:
-            if seq[A[i]] == False: 
-                seq[A[i]] = True 
-                perm -= 1 
-                missing = A[i]+1 
-        except IndexError:
-            pass
+        else:
+            try:
+                if seq[A[i]] == False: 
+                    seq[A[i]] = True 
+                    perm -= 1 
+            except IndexError:
+                pass
+        # the sequence is complete from 1 to n
+        # minimum missing element is len(A)+1
         if perm == 0:
             return len(A)+1
 
-    if missing is not None:
-        for e in range(1,len(seq)): 
-            if not seq[e]: 
-                return e 
+
+    # the missing element is somewhere in the sequence
+    for e in range(1,len(seq)): 
+        if not seq[e]: 
+            return e
+    
+    # the missing element is 1
     return missing
