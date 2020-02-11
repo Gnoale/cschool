@@ -1,0 +1,17 @@
+def solution(S):
+    # write your code in Python 3.6
+    queue = []
+    
+    for char in S:
+        if char == "(":
+            queue.append(1)
+        elif char == ")" and len(queue) < 1:
+            queue.append(1)
+        elif char == ")":
+            queue.pop()
+        
+        
+    if len(queue) > 0:
+        return 0
+    else:
+        return 1
