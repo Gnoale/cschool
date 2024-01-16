@@ -1,0 +1,226 @@
+#!/usr/bin/env python
+
+import os
+
+path = os.path.abspath('.') 
+
+class Intcode():
+
+    def __init__(self, data, start=None):
+        self.run = data.copy()  # the intcode list
+        self.start = start      # the first parameter
+        self.diag = 0           # used to return output value
+        self.first = True       # keep track if the program was ran already once 
+        self.phase = None
+        self.pointer = 0
+        self.opcode = None
+        self.para1 = None
+        self.para2 = None
+        self.mode1 = None
+        self.mode2 = None
+
+    def setOpmode(self):
+        # Instructions are potentially 5 digits integers (10000)
+        # Opcode is 2 last digits (DE)
+        # Mode1 (C) and Mode2 (B) are either 0 or 1, respectfully 3rd and 4th digits
+        # Example
+        # ABCDE
+        #  1002
+        opcodes = {
+            1:"add",
+            2:"mult",
+            3:"store",
+            4:"diag",
+            5:"jumpt",
+            6:"jumpf",
+            7:"less",
+            8:"equal",
+            99:"exit"
+        }
+        #print(self.pointer)
+        self.opcode = opcodes[self.run[self.pointer]%100]
+        self.mode1 = self.run[self.pointer]%1000//100
+        self.mode2 = self.run[self.pointer]//1000
+        # Mode 3 is not implemented yet
+
+    def setParameters(self):
+        if self.mode1 == 0:
+            self.para1 = self.run[self.run[self.pointer+1]]
+        elif self.mode1 == 1:
+            self.para1 = self.run[self.pointer+1]
+        if self.mode2 == 0:
+            self.para2 = self.run[self.run[self.pointer+2]]
+        elif self.mode2 == 1:
+            self.para2 = self.run[self.pointer+2]
+
+    def opAdd(self):
+        self.run[self.run[self.pointer+3]] = self.para1 + self.para2
+        self.pointer += 4
+
+    def opMult(self):
+        self.run[self.run[self.pointer+3]] = self.para1 * self.para2
+        self.pointer += 4
+
+    # first (and second) instruction 
+    # if the phase parameter is defined and the program just started we must use its value first
+    # then the value use will be either 0 if running on the first "amplifier"
+    # or equal to the latest output value
+    def opStore(self, output):
+        if self.phase is None:
+            self.run[self.run[self.pointer+1]] = self.start
+        elif self.pointer == 0 and self.first:
+            self.run[self.run[self.pointer+1]] = self.phase
+        else:
+            self.run[self.run[self.pointer+1]] = output
+        self.pointer += 2
+
+    def opDiag(self):
+        self.diag = self.run[self.run[self.pointer+1]]
+        print("Diagnostic Code", self.diag)
+        self.pointer += 2
+
+    def opJumpf(self):
+        if self.para1 == 0:
+            self.pointer = self.para2
+        else:
+            self.pointer += 3
+
+    def opJumpt(self):
+        if self.para1 != 0:
+            self.pointer = self.para2
+        else:
+            self.pointer += 3
+    
+    def opLess(self):
+        if self.para1 < self.para2:
+            self.run[self.run[self.pointer+3]] = 1
+        else:
+            self.run[self.run[self.pointer+3]] = 0
+        self.pointer += 4  
+
+    def opEqual(self):
+        if self.para1 == self.para2:
+            self.run[self.run[self.pointer+3]] = 1
+        else:
+            self.run[self.run[self.pointer+3]] = 0
+        self.pointer += 4
+
+    # run the intcode
+    def opRun(self, output=0):
+        # These case doesn't use the parameters retrieval
+        nopara = ["store", "diag", "exit"]
+        # Part2 : we should just restart the loop once we got through intcode
+        # program will exit if exit code only
+        while True:
+#            if self.pointer >= len(self.run)-1:
+#                print("RESTART")
+#                self.pointer = 0
+#                self.first = False
+#                # set the output value to the latest diagnostic code
+#                output = self.diag
+            self.setOpmode()
+            print(self.pointer, self.opcode)
+            # Avoid list index out of range exception
+            if self.opcode not in nopara:
+                self.setParameters()
+            if self.opcode == "add":
+                self.opAdd()
+            elif self.opcode == "mult":
+                self.opMult()
+            elif self.opcode == "store":
+                if self.phase is None:
+                    self.opStore()
+                else:
+                    self.opStore(output)
+            # part2 
+            # each worker will return several times the diagnostic code before exiting
+            elif self.opcode == "diag":
+                self.opDiag()
+                self.first = False  
+                return self.diag, True
+            elif self.opcode == "jumpt":
+                self.opJumpt()
+            elif self.opcode == "jumpf":
+                self.opJumpf()
+            elif self.opcode == "less":
+                self.opLess()
+            elif self.opcode == "equal":
+                self.opEqual()
+            elif self.opcode == "exit":
+                print(self.run)
+                print()
+                # output value
+                return self.diag, False
+ 
+
+if __name__=='__main__':
+    
+    data = []
+    with open(path+'/input', 'r') as f:
+        for l in f:
+            for i in l.split(','):
+                data.append(int(i))
+
+   # data = [3,26,1001,26,-4,26,3,27,1002,27,2,27,1,27,26,
+# 27,4,27,1001,28,-1,28,1005,28,6,99,0,0,5] 
+    # 120 possibility N!
+    phases = [5,6,7,8,9] 
+    N = len(phases)
+
+    from itertools import permutations
+
+#    intcode = Intcode(data,5)
+#    print(data)
+#    intcode.opRun()
+
+    m = {}
+    
+    workers = {}
+
+    for permut in permutations(phases):
+        # (3, 1, 4, 2, 0)
+        # (3, 2, 0, 4, 1)
+        # ...
+        # part2
+        # we need to run multiple times the loop for a given permut
+        # first occurence of the first loop use the usual phase value and 0 input value
+        # first occurence of the further loops will use the last output value from the latest amplifier "E" 
+        
+        # first element handled separetly (default input value to 0)
+        
+        workers["A"] = Intcode(data)
+        workers["B"] = Intcode(data)
+        workers["C"] = Intcode(data)
+        workers["D"] = Intcode(data)
+        workers["E"] = Intcode(data)
+
+        workers["A"].phase = permut[0]
+        workers["B"].phase = permut[1]
+        workers["C"].phase = permut[2]
+        workers["D"].phase = permut[3]
+        workers["E"].phase = permut[4]
+
+        state = True
+        
+        while state:
+
+            if workers["A"].first:              # First loop, we run default (phase setting + 0 output value)
+                output, state = workers["A"].opRun()
+            else:                               # Not the first loop, we pass the output value  
+                output, state = workers["A"].opRun(output)
+            
+            output, state = workers["B"].opRun(output)
+            output, state = workers["C"].opRun(output)
+            output, state = workers["D"].opRun(output)
+            output, state = workers["E"].opRun(output)
+            # store current permutation and last associated output value 
+            m[permut] = output
+    
+    maximum = 0
+    permut = ()
+    print(m)
+    for k, v in m.items():
+        if v > maximum:
+            permut = k
+            maximum = v
+    print(permut, maximum)

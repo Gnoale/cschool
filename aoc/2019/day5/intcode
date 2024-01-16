@@ -1,0 +1,132 @@
+#!/usr/bin/env python
+
+import os
+
+
+class Intcode():
+
+    def __init__(self, data, start):
+        self.run = data  # the intcode list
+        self.start = start  # the first parameter
+        self.pointer = 0
+        self.opcode = None
+        self.para1 = None
+        self.para2 = None
+        self.mode1 = None
+        self.mode2 = None
+
+    def set_opmode(self):
+        # Instructions are potentially 5 digits integers (10000)
+        # Opcode is 2 last digits (DE)
+        # Mode1 (C) and Mode2 (B) are either 0 or 1, respectfully 3rd and 4th digits
+        # Example
+        # ABCDE
+        #  1002
+        opcodes = {
+            1: "add",
+            2: "mult",
+            3: "store",
+            4: "diag",
+            5: "jumpt",
+            6: "jumpf",
+            7: "less",
+            8: "equal",
+            99: "exit"
+        }
+        self.opcode = opcodes[self.run[self.pointer] % 100]
+        self.mode1 = self.run[self.pointer] % 1000//100
+        self.mode2 = self.run[self.pointer]//1000
+        # Mode 3 is not implemented yet
+
+    def set_parameters(self):
+        if self.mode1 == 0:
+            self.para1 = self.run[self.run[self.pointer+1]]
+        elif self.mode1 == 1:
+            self.para1 = self.run[self.pointer+1]
+        if self.mode2 == 0:
+            self.para2 = self.run[self.run[self.pointer+2]]
+        elif self.mode2 == 1:
+            self.para2 = self.run[self.pointer+2]
+
+    def op_add(self):
+        self.run[self.run[self.pointer+3]] = self.para1 + self.para2
+        self.pointer += 4
+
+    def op_mult(self):
+        self.run[self.run[self.pointer+3]] = self.para1 * self.para2
+        self.pointer += 4
+
+    def op_store(self):
+        self.run[self.run[self.pointer+1]] = self.start
+        self.pointer += 2
+
+    def op_diag(self):
+        print("Diagnostic Code", self.run[self.run[self.pointer+1]])
+        self.pointer += 2
+
+    def op_jumpf(self):
+        if self.para1 == 0:
+            self.pointer = self.para2
+        else:
+            self.pointer += 3
+
+    def op_jumpt(self):
+        if self.para1 != 0:
+            self.pointer = self.para2
+        else:
+            self.pointer += 3
+
+    def op_less(self):
+        if self.para1 < self.para2:
+            self.run[self.run[self.pointer+3]] = 1
+        else:
+            self.run[self.run[self.pointer+3]] = 0
+        self.pointer += 4
+
+    def op_equal(self):
+        if self.para1 == self.para2:
+            self.run[self.run[self.pointer+3]] = 1
+        else:
+            self.run[self.run[self.pointer+3]] = 0
+        self.pointer += 4
+
+    # run the intcode
+    def op_run(self):
+        # These case doesn't use the parameters retrieval
+        nopara = ["store", "diag", "exit"]
+        while self.pointer < len(self.run):
+            self.set_opmode()
+            # Avoid list index out of range exception
+            if self.opcode not in nopara:
+                self.set_parameters()
+            if self.opcode == "add":
+                self.op_add()
+            elif self.opcode == "mult":
+                self.op_mult()
+            elif self.opcode == "store":
+                self.op_store()
+            elif self.opcode == "diag":
+                self.op_diag()
+            elif self.opcode == "jumpt":
+                self.op_jumpt()
+            elif self.opcode == "jumpf":
+                self.op_jumpf()
+            elif self.opcode == "less":
+                self.op_less()
+            elif self.opcode == "equal":
+                self.op_equal()
+            elif self.opcode == "exit":
+                return
+
+
+if __name__ == '__main__':
+
+    path = os.path.abspath('.')
+    data = []
+    with open(path+'/input', 'r') as intcode:
+        for line in intcode:
+            for code in line.split(','):
+                data.append(int(code))
+
+    intcode = Intcode(data, 5)
+    intcode.op_run()

@@ -1,0 +1,88 @@
+#!/usr/bin/env python3
+from collections import defaultdict
+
+orbitals = []
+
+with open('input', 'r') as f:
+    for e in f:
+#        orbitals += [[e.split(')')[0]] + [e.split(')')[1].strip('\n')]]
+        orbitals.append((e.split(')')[0], e.split(')')[1].strip('\n'))) 
+#print(orbitals)
+#orbitals = [ 
+#    ('C','D'),
+#    ('B','C'),
+#    ('D','E'),
+#    ('B','G'),
+#    ('E','F'),
+#    ('G','H'),
+#    ('D','I'),
+#    ('I', 'SAN'),
+#    ('E','J'),
+#    ('J','K'),
+#    ('K', 'YOU'),
+#    ('COM','B'),
+#    ('K','L')
+#    ]
+
+
+def traverse_graph(node, graph):
+    queue = []
+    visited = []
+    level = {}
+   
+    queue.append(node)
+    visited.append(node)
+    level[node] = 0
+
+    while len(queue) > 0:
+#        print("Visited : ",visited)
+        node = queue[0]
+        queue.pop(0)
+        next_nodes = graph[node]
+        
+        for n in next_nodes:
+            level[n] = level[node] + 1 
+            if n not in visited:
+                queue.append(n)
+                visited.append(n)
+    return level
+
+def total_orbital(level):
+    O = 0
+    for k, v in level.items():
+        O += v
+    print("Total direct and undirect orbitals = {}".format(O))
+    return O
+
+# first part
+# {'C': ['D'], 'B': ['C', 'G'], 'D': ['E', 'I'], 'E': ['F', 'J'], 'G': ['H'], 'J': ['K'], 'COM': ['B'], 'K': ['L']})
+graph = defaultdict(list)
+for k, v in orbitals:
+    graph[k].append(v)
+
+lc = traverse_graph('COM', graph)
+total_orbital(lc)
+
+
+# second part
+# build the graph in reverse order
+graph = defaultdict(list)
+for k, v in orbitals:
+    graph[v].append(k)
+
+ly = traverse_graph('YOU', graph)
+ls = traverse_graph('SAN', graph)
+
+print(ly)
+print(ls)
+
+# find the costless intersection
+sp = False 
+for k, v in ly.items():
+    if k in ls:
+        spt = v + ls[k]
+        if not sp or spt < sp:
+            sp = spt
+
+print(sp-2)
+

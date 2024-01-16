@@ -1,0 +1,95 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+def get_layers(layers_in, width, test=False):
+    """Parse an input of digits and return a 2d array"""
+    digits = ""
+    if test:
+        digits = layers_in
+    else:
+        with open(layers_in, 'r') as finput:
+            digits = finput.read()
+    layers = []
+    line = []
+    for i in range(len(digits)):
+        # reset new line each n steps (25 * 6) and append to layers
+        if i % width == 0 and i > 0:
+            layers.append(line)
+            line = []
+        try:
+            line.append(int(digits[i]))
+        except ValueError: #\n
+            pass
+    layers.append(line)
+    return layers
+
+
+def fewest_0(layers):
+    """Count # of 0 digits for each dimension
+    Return the product of # of 1 digits with # of 2 digits 
+    for the layer with the fewest
+    """
+    min_0 = 6*25
+    index = 0
+    for i in range(len(layers)):
+        current_min = 0
+        for digit in layers[i]:
+            if digit == 0:
+                current_min += 1
+        if current_min < min_0:
+            min_0 = current_min
+            index = i
+    # now do the product     
+    p1, p2 = 0, 0
+    for digit in layers[index]:
+        if digit == 1:
+            p1 += 1
+        if digit ==2:
+            p2 += 1
+    return p1*p2
+
+
+def decode_image(layers):
+    final = layers[0]
+    i = 1
+    while i < len(layers):
+        # [0222]
+        # [1122]
+        # [2212]
+        # [0000]
+        for j in range(len(layers[i])):
+            if final[j] < 2:
+                continue
+            final[j] = layers[i][j]
+        i += 1
+    return final
+
+
+def print_image(layer, width):
+    line = ""
+    for i in range(len(layer)):
+        if i % width == 0 and i > 0:
+            print(line, "\n")
+            line = ""
+        if layer[i] == 0:
+            char = " "
+        else:
+            char = "#"
+        line = line + char
+    print(line, "\n")
+
+
+
+
+if __name__ == '__main__':
+
+    # The image you received is 25 pixels wide and 6 pixels tall.
+    layers = get_layers('input', 25*6)
+    #print(fewest_0(layers))
+
+    #test = [0,2,2,2,1,1,2,2,2,2,1,2,0,0,0,0]
+    #layers = get_layers(test, 4, test=True)
+    #print(layers)
+    final = decode_image(layers)
+    #print(final)
+    print_image(final, 25)

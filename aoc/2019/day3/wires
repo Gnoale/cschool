@@ -1,0 +1,119 @@
+#!/usr/bin/env python
+
+import os
+
+path = os.path.abspath('.') 
+
+wires = []
+
+with open(path+'/input', 'r') as f:
+    wires = [ l.split(',') for l in f ]
+
+
+wa = wires[0]
+wb = wires[1]
+
+#wa = ["R75","D30","R83","U83","L12","D49","R71","U7","L72"]
+#wb= ["U62","R66","U55","R34","D71","R55","D58","R83"]
+#wa = ["R8", "U5", "L5", "D3"]
+#wb = ["U7", "R6", "D4", "L4"]
+
+
+def getpoints(coordinates):
+    i = x = y = 0
+    steps = 0
+    points = []
+    while i < len(coordinates):
+        d = int(coordinates[i][1:].strip('\n'))
+        if coordinates[i].startswith('R'):
+            x += d
+            steps += d
+        elif coordinates[i].startswith('L'):
+            x -= d
+            steps += d
+        elif coordinates[i].startswith('U'):
+            y += d
+            steps += d
+        elif coordinates[i].startswith('D'):
+            y -= d 
+            steps += d
+        points.append({'x':x,'y':y,'steps':steps})
+        i += 1
+    return points
+
+def getvector(points):
+    i = 0
+    v = []
+    while i < len(points):
+        if i == 0:
+            v.append({'a':{'x':0, 'y':0, 'steps':0}, 'b':points[i]})
+        else:
+            v.append({'a':points[i-1], 'b':points[i]})
+        i += 1
+    return v
+
+
+pointsa = getpoints(wa)
+pointsb = getpoints(wb)
+
+vectora = getvector(pointsa)
+vectorb = getvector(pointsb)
+
+print("vectora")
+for e in vectora:
+    print(e['a'], e['b'])
+print()
+print("vectorb")
+for e in vectorb:
+    print(e['a'], e['b'])
+print()
+
+
+
+inter = []
+
+i = 0
+while i < len(vectora):
+    j = 0
+    while j < len(vectorb):
+        # vectora[i] // x 
+        if vectora[i]['a']['y'] == vectora[i]['b']['y']:
+            # vectorb[j] // y
+            if vectorb[j]['a']['x'] == vectorb[j]['b']['x']:
+                if (vectora[i]['a']['x'] <= vectorb[j]['a']['x'] <= vectora[i]['b']['x'] or
+                    vectora[i]['a']['x'] >= vectorb[j]['a']['x'] >= vectora[i]['b']['x']):
+                    if (vectorb[j]['a']['y'] <= vectora[i]['a']['y'] <= vectorb[j]['b']['y'] or
+                        vectorb[j]['a']['y'] >= vectora[i]['a']['y'] >= vectorb[j]['b']['y']):
+                        xs = abs(vectorb[j]['a']['x'] - vectora[i]['a']['x'])
+                        ys = abs(vectora[i]['a']['y'] - vectorb[j]['a']['y'])
+                        inter.append({'x':vectorb[j]['a']['x'], 'y':vectora[i]['a']['y'], 'steps': (vectorb[j]['a']['steps']+vectora[i]['a']['steps']+xs+ys)})
+        # vectora[i] // y 
+        if vectora[i]['a']['x'] == vectora[i]['b']['x']:
+            # vectorb[j] // x 
+            if vectorb[j]['a']['y'] == vectorb[j]['b']['y']:
+                if (vectora[i]['a']['y'] <= vectorb[j]['a']['y'] <= vectora[i]['b']['y'] or
+                    vectora[i]['a']['y'] >= vectorb[j]['a']['y'] >= vectora[i]['b']['y']):
+                    if (vectorb[j]['a']['x'] <= vectora[i]['a']['x'] <= vectorb[j]['b']['x'] or
+                        vectorb[j]['a']['x'] >= vectora[i]['a']['x'] >= vectorb[j]['b']['x']):
+                        xs = abs(vectora[i]['a']['x'] - vectorb[j]['a']['x'])
+                        ys = abs(vectorb[j]['a']['y'] - vectora[i]['a']['y'])
+                        print(xs, ys)
+                        inter.append({'x':vectora[i]['a']['x'], 'y':vectorb[j]['a']['y'], 'steps': (vectora[i]['a']['steps']+vectorb[j]['a']['steps']+xs+ys) })
+        j += 1
+    i += 1
+
+dist = []
+steps = []
+
+for i in inter:
+    d = abs(0-i['x']) + abs(0-i['y'])
+    print(i, d)
+    dist.append(d)
+    steps.append(i['steps'])
+
+
+print(min(dist))
+print(dist)
+print(steps)
+
+print(min(steps))
