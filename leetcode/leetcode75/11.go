@@ -1,6 +1,4 @@
-package main
-
-import "fmt"
+package leetcode75
 
 /*
 Avec 2 pointeurs, calculer la valeur de l'aire du rectangle
@@ -9,7 +7,6 @@ garder un maximum, déplacer le pointeur du segment le plus bas
 */
 
 func maxArea(height []int) int {
-
 	left := 0
 	right := len(height) - 1
 	max := 0
@@ -37,13 +34,6 @@ func maxArea(height []int) int {
 		if area > max {
 			max = area
 		}
-
 	}
 	return max
-
-}
-
-func main() {
-	fmt.Println(maxArea([]int{1, 8, 6, 2, 5, 4, 8, 3, 7}))
-
 }

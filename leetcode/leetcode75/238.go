@@ -1,6 +1,4 @@
-package main
-
-import "fmt"
+package leetcode75
 
 /*
 Input: nums = [1,2,3,4]
@@ -42,14 +40,6 @@ func productExceptSelf(nums []int) []int {
 	}
 
 	return output
-
-}
-
-func main() {
-
-	fmt.Println(productExceptSelf([]int{1, 2, 3, 4}))
-	fmt.Println(productExceptSelf([]int{-1, 1, 0, -3, 3}))
-
 }
 
 /*

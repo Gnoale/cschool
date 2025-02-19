@@ -1,4 +1,4 @@
-package main
+package leetcode75
 
 import (
 	"fmt"
@@ -27,12 +27,9 @@ func compress(chars []byte) int {
 		current := chars[read]
 		count := 0
 		// advance the read pointer until the char change
-		for chars[read] == current {
+		for read < len(chars) && chars[read] == current {
 			read++
 			count++
-			if read == len(chars) {
-				break
-			}
 		}
 		fmt.Println(read, write)
 		// write the number
@@ -49,13 +46,5 @@ func compress(chars []byte) int {
 	}
 	fmt.Println(string(chars))
 	return write
-
-}
-
-func main() {
-	fmt.Println(compress([]byte("aabbccc")))
-	fmt.Println(compress([]byte("a")))
-	fmt.Println(compress([]byte("abbbbbbbbbbbbb")))
-	fmt.Println(compress([]byte("aaabbaa")))
 
 }

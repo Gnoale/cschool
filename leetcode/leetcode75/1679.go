@@ -1,7 +1,6 @@
-package main
+package leetcode75
 
 import (
-	"fmt"
 	"sort"
 )
 
@@ -11,9 +10,7 @@ Utiliser 2 pointeurs avec la list sorted
 */
 
 func maxOperations(nums []int, k int) int {
-
 	total := 0
-
 	sort.Ints(nums)
 	j := len(nums) - 1
 	i := 0
@@ -23,18 +20,11 @@ func maxOperations(nums []int, k int) int {
 			total += 1
 			i += 1
 			j -= 1
-			continue
 		} else if s < k {
 			i += 1
-		} else if s > k {
+		} else {
 			j -= 1
 		}
-
 	}
 	return total
-
-}
-
-func main() {
-	fmt.Println(maxOperations([]int{3, 1, 3, 4, 3}, 6))
 }

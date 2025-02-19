@@ -1,4 +1,4 @@
-package main
+package leetcode75
 
 import (
 	"fmt"
@@ -27,8 +27,4 @@ func dailyTemperatures(temperatures []int) []int {
 	}
 
 	return response
-}
-
-func main() {
-	fmt.Println(dailyTemperatures([]int{73, 74, 75, 71, 69, 72, 76, 73}))
 }

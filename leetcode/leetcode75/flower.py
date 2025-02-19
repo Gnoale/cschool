@@ -1,3 +1,5 @@
+package leetcode75
+
 def canPlaceFlowers(flowerbed: list[int], n: int) -> bool:
     i = 0
 
@@ -20,10 +22,7 @@ def canPlaceFlowers(flowerbed: list[int], n: int) -> bool:
                 continue
         i += 1
 
-    if n <= 0:
-        return True
-
-    return False
+    return n <= 0
 
 
 print(canPlaceFlowers([1, 0, 0, 0, 0, 1], 2))  # False
