@@ -21,10 +21,10 @@ def predictPartyVictory(senate: str) -> str:
     r = Queue()
     d = Queue()
 
-    for i in range(len(senate)):
-        if senate[i] == "R":
+    for i, letter in enumerate(senate):
+        if letter == "R":
             r.push(i)
-        if senate[i] == "D":
+        if letter == "D":
             d.push(i)
 
     while r.size() > 0 and d.size() > 0:

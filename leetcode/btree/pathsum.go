@@ -1,7 +1,5 @@
 package btree
 
-import "fmt"
-
 func pathSum(root *TreeNode, targetSum int) int {
 	if root == nil {
 		return 0
@@ -29,7 +27,6 @@ func findSums(node *TreeNode, sum int, paths int, k int, prefixSums map[int]int)
 
 	// prune the current leaf node sum
 	prefixSums[sum]--
-	fmt.Println("reached leaf node", node.Val, "paths", paths, prefixSums)
 	return paths
 }
 

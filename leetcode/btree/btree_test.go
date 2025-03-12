@@ -45,3 +45,19 @@ func TestLevelOrder(t *testing.T) {
 		assert.Equal(t, testCase.expected, levelOrder(testCase.root))
 	}
 }
+
+var goodNodesCases = []struct {
+	root     *TreeNode
+	expected int
+}{
+	{root: &TreeNode{Val: 3, Left: &TreeNode{Val: 1, Left: &TreeNode{Val: 3}}, Right: &TreeNode{Val: 4, Left: &TreeNode{Val: 1}, Right: &TreeNode{Val: 5}}}, expected: 4},
+
+	{root: &TreeNode{Val: 3, Left: &TreeNode{Val: 3, Left: &TreeNode{Val: 4}}, Right: &TreeNode{Val: 2}}, expected: 3},
+	{root: &TreeNode{Val: 9, Right: &TreeNode{Val: 3, Left: &TreeNode{Val: 6}}}, expected: 1},
+}
+
+func TestFindGoodNodes(t *testing.T) {
+	for _, testCase := range goodNodesCases {
+		assert.Equal(t, testCase.expected, findGoodNodes(testCase.root, -10000, 0))
+	}
+}

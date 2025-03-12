@@ -1,7 +1,6 @@
 package btree
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -94,8 +93,7 @@ var pathSumCases = []struct {
 }
 
 func TestPathSum(t *testing.T) {
-	for i, testCase := range pathSumCases {
-		fmt.Println("test case", i, testCase.targetSum)
+	for _, testCase := range pathSumCases {
 		assert.Equal(t, testCase.expected, pathSum(testCase.root, testCase.targetSum))
 	}
 }

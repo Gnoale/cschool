@@ -1,7 +1,6 @@
 package leetcode75
 
 import (
-	"fmt"
 	"strconv"
 )
 
@@ -31,10 +30,8 @@ func compress(chars []byte) int {
 			read++
 			count++
 		}
-		fmt.Println(read, write)
-		// write the number
 		chars[write] = current
-		write += 1
+		write++
 		if count > 1 {
 			// store N as bytes in the array
 			for _, char := range strconv.Itoa(count) {
@@ -44,7 +41,5 @@ func compress(chars []byte) int {
 		}
 		// now the write pointer position must be <= the read one
 	}
-	fmt.Println(string(chars))
 	return write
-
 }

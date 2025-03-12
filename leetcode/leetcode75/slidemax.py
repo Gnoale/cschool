@@ -18,8 +18,8 @@ def sliding_window_maximum(nums: List[int], k: int) -> List[int]:
     # if the index is over or equal our window we simply append the maximum to our result
     # the Q maintain the state of max element this is brillant !
 
-    for i in range(len(nums)):
-        while Q and nums[i] > nums[Q[-1]]:
+    for i, num in enumerate(nums):
+        while Q and num > nums[Q[-1]]:
             Q.pop()
 
         Q.append(i)
