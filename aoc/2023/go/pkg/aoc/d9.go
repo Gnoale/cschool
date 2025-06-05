@@ -7,44 +7,45 @@ import (
 	"strings"
 )
 
-func parseD9(scanner *bufio.Scanner) [][]int {
-	seq := [][]int{}
+func parseD9(scanner *bufio.Scanner) [][]int64 {
+	seq := [][]int64{}
 	for scanner.Scan() {
-		s := []int{}
+		s := []int64{}
 		for _, n := range strings.Split(scanner.Text(), " ") {
 			num, err := strconv.Atoi(n)
 			if err != nil {
 				panic(err)
 			}
-			s = append(s, num)
+			s = append(s, int64(num))
 		}
 		seq = append(seq, s)
 	}
 	return seq
 }
 
-func regress(sequence []int, stack [][]int) [][]int {
-	interval := []int{}
+func regress(sequence []int64, stack [][]int64) [][]int64 {
+	interval := []int64{}
 	for i := 1; i < len(sequence); i++ {
 		interval = append(interval, sequence[i]-sequence[i-1])
 	}
 	stack = append(stack, interval)
 	sequence = stack[len(stack)-1]
-
 	if interval[len(interval)-1] != 0 {
 		return regress(sequence, stack)
 	}
+
+	fmt.Println("All Zeros ?", interval)
 	return stack
 }
 
 func FindSequences(scanner *bufio.Scanner) {
 	baseSequences := parseD9(scanner)
 
-	var total int
+	var total int64
 
 	for _, sequence := range baseSequences {
 		base := sequence // save
-		stacks := regress(sequence, [][]int{})
+		stacks := regress(sequence, [][]int64{})
 		/*
 			[
 				[-1 -5 -5 2 19 49 95 160 247 359 499 670 875 1117 1399 1724 2095 2515 2987 3514]
@@ -59,10 +60,13 @@ func FindSequences(scanner *bufio.Scanner) {
 		}
 
 		base = append(base, base[len(base)-1]+stacks[0][len(stacks[0])-1])
-		//	total += math.Abs(float64(base[len(base)-1]))
-		total += base[len(base)-1]
-		fmt.Println(base, int(total))
+		latest := base[len(base)-1]
+		if latest < 0 {
+			latest = -latest
+		}
+		total += latest
+		fmt.Println(base, total)
 		fmt.Println()
 	}
-	fmt.Println(int(total))
+	fmt.Println(total)
 }

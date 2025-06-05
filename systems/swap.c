@@ -1,19 +1,20 @@
 #include <stdio.h>
 #include <string.h>
 
-void main()
-{
 
-  void swap(void* vp1, void* vp2, int size) 
-  {  
-    int* buffer[size];
-    
-    memcpy(buffer, vp1, size);
-    memcpy(vp1, vp2, size);
-    
-    printf("buffer[0] = %p\n", buffer[0]);
-    memcpy(vp2, buffer, size);
-  }
+void swap(void* vp1, void* vp2, int size) {  
+  int* buffer[size];
+  
+  memcpy(buffer, vp1, size);
+  memcpy(vp1, vp2, size);
+  
+  //printf("buffer[0] = %p\n", buffer[0]);
+  memcpy(vp2, buffer, size);
+}
+
+
+void main() {
+
 
   int g1 = 20900988;
   int g2 = 1;
@@ -33,8 +34,4 @@ void main()
 
   printf("&g1 = %p\n", &g1);
   printf("&g2 = %p\n", &g2);
- 
-
-
-
 }

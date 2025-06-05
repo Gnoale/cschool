@@ -12,7 +12,7 @@ func main() {
 	//aoc.Race(bufio.NewScanner(utils.ReadInput("./inputs/d6.input")))
 	//aoc.CamelPoker(bufio.NewScanner(utils.ReadInput("./inputs/d7.input")))
 	//aoc.NavigateDesert(bufio.NewScanner(utils.ReadInput("./inputs/d8.input")))
-	//aoc.FindSequences(bufio.NewScanner(utils.ReadInput("./inputs/d9.input")))
-	aoc.FindPaths(bufio.NewScanner(utils.ReadInput("./inputs/d10.sample")))
+	aoc.FindSequences(bufio.NewScanner(utils.ReadInput("./inputs/d9.input")))
+	//aoc.FindPaths(bufio.NewScanner(utils.ReadInput("./inputs/d10.sample")))
 
 }
